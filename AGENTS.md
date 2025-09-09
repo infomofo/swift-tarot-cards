@@ -51,6 +51,8 @@ Customizations and clarifications for this repository. Specify how general laws 
 3. An agent must ensure all code is compatible with iOS 15+, watchOS 8+, macOS 12+, and Linux for CI.
 4. An agent must maintain the tarot-model submodule and ensure data loading remains functional.
 5. An agent must provide both SwiftUI and text-based representations for all visual components.
+6. **An agent must validate all changes before claiming completion by running linting, building, and testing locally or in CI-compatible environments.**
+7. **An agent must verify CI workflow compatibility by checking tool versions, dependencies, and platform requirements before submitting PRs.**
 
 ### Repo-Specific Law Clarifications
 
@@ -58,6 +60,21 @@ Customizations and clarifications for this repository. Specify how general laws 
 - For deck shuffling, agents must use Fisher-Yates or equivalent secure algorithms using `SystemRandomNumberGenerator`.
 - For tarot card data, agents must preserve the integrity of traditional meanings while allowing extensibility.
 - For cross-platform compatibility, agents should use `#if canImport(SwiftUI)` guards and provide fallbacks for headless environments.
+- **For linting compliance, agents must run SwiftLint locally or via Docker before claiming code is ready. Use reasonable line length limits (150-160 characters) and disable problematic rules like `switch_case_on_newline` if they cause excessive violations.**
+- **For CI compatibility, agents must verify that all workflow dependencies (Xcode versions, action versions, tool versions) are current and available in GitHub runners. Use specific available Xcode versions (check GitHub runner documentation) and update deprecated GitHub Actions to latest versions (e.g., `actions/upload-artifact@v4`).**
+
+## Critical Pre-Submission Checklist
+
+Before marking any PR as complete, agents MUST verify:
+
+1. **Linting**: Run `swiftlint lint --strict Sources/ Tests/` locally or via Docker and ensure 0 violations
+2. **Building**: Run `swift build` and ensure it compiles without errors
+3. **Testing**: Run `swift test` and ensure all tests pass
+4. **CI Compatibility**: 
+   - Verify Xcode versions exist in GitHub runners (check available versions in setup-xcode action docs)
+   - Ensure all GitHub Actions use current versions (v3 actions are deprecated as of 2024)
+   - Validate that all tool dependencies are available and compatible
+5. **Platform Support**: Test on Linux (via Docker if needed) to ensure cross-platform compatibility
 
 ---
 

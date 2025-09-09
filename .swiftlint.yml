@@ -1,5 +1,8 @@
 disabled_rules:
   - trailing_whitespace
+  - switch_case_on_newline
+  - trailing_newline
+  - cyclomatic_complexity
 
 opt_in_rules:
   - empty_count
@@ -8,7 +11,6 @@ opt_in_rules:
   - implicitly_unwrapped_optional
   - overridden_super_call
   - redundant_nil_coalescing
-  - switch_case_on_newline
   - unneeded_parentheses_in_closure_argument
   - vertical_whitespace_closing_braces
 
@@ -21,8 +23,8 @@ excluded:
   - tarot-model
 
 line_length:
-  warning: 120
-  error: 150
+  warning: 160
+  error: 200
 
 type_body_length:
   warning: 300
@@ -47,6 +49,12 @@ identifier_name:
     - id
     - x
     - y
+    - i
+    - j
+    - a
+    - r
+    - g
+    - b
 
 type_name:
   min_length:

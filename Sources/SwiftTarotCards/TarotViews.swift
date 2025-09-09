@@ -212,10 +212,14 @@ public struct MinorArcanaCardView: View {
     
     private func suitColor(for suit: Suit) -> Color {
         switch suit {
-        case .cups: return .blue
-        case .pentacles: return .green
-        case .swords: return .gray
-        case .wands: return .orange
+        case .cups:
+            return .blue
+        case .pentacles:
+            return .green
+        case .swords:
+            return .gray
+        case .wands:
+            return .orange
         }
     }
 }

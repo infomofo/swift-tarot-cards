@@ -230,7 +230,7 @@ jobs:
         cat generated-images/sample_reading.md || echo "No reading file found"
         
     - name: Upload Generated Images
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tarot-card-representations
         path: generated-images/

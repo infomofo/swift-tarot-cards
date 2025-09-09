@@ -151,7 +151,12 @@ public struct CommonSpreads {
         name: "Three Card Spread",
         description: "A simple spread representing Past, Present, and Future",
         positions: [
-            SpreadPosition(position: 1, name: "Past", positionSignificance: "Events and influences from the past affecting the current situation", dealOrder: 1),
+            SpreadPosition(
+                position: 1, 
+                name: "Past", 
+                positionSignificance: "Events and influences from the past affecting the current situation", 
+                dealOrder: 1
+            ),
             SpreadPosition(position: 2, name: "Present", positionSignificance: "The current situation and immediate influences", dealOrder: 2),
             SpreadPosition(position: 3, name: "Future", positionSignificance: "Potential outcomes and future developments", dealOrder: 3)
         ],

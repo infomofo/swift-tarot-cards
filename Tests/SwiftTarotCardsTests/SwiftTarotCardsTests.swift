@@ -121,16 +121,16 @@ final class SwiftTarotCardsTests: XCTestCase {
     // MARK: - Helper Methods
     
     private func createMockCards() -> [MockTarotCard] {
-        return (1...10).map { i in
+        return (1...10).map { index in
             MockTarotCard(
-                id: "mock-\(i)",
-                name: "Mock Card \(i)",
-                keywords: ["keyword\(i)"],
-                meanings: CardMeanings(upright: ["upright\(i)"], reversed: ["reversed\(i)"]),
-                visualDescription: VisualDescription(background: "bg\(i)", foreground: "fg\(i)"),
-                visualDescriptionAnalysis: ["analysis\(i)"],
-                symbols: ["symbol\(i)"],
-                significance: "significance\(i)"
+                id: "mock-\(index)",
+                name: "Mock Card \(index)",
+                keywords: ["keyword\(index)"],
+                meanings: CardMeanings(upright: ["upright\(index)"], reversed: ["reversed\(index)"]),
+                visualDescription: VisualDescription(background: "bg\(index)", foreground: "fg\(index)"),
+                visualDescriptionAnalysis: ["analysis\(index)"],
+                symbols: ["symbol\(index)"],
+                significance: "significance\(index)"
             )
         }
     }
