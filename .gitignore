@@ -23,6 +23,8 @@ generated-images/
 # Temporary files
 .tmp/
 tmp/
+swiftlint.zip
+swiftlint
 
 # IDE
 .vscode/
