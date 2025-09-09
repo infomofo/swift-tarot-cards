@@ -20,6 +20,8 @@ public struct SecureShuffleStrategy: ShuffleStrategy {
     
     public func shuffle<T>(_ cards: [T]) -> [T] {
         var shuffled = cards
+        guard shuffled.count > 1 else { return shuffled }
+        
         var generator = SystemRandomNumberGenerator()
         
         for i in (1..<shuffled.count).reversed() {
@@ -39,6 +41,7 @@ public struct SimpleShuffleStrategy: ShuffleStrategy {
     public init() {}
     
     public func shuffle<T>(_ cards: [T]) -> [T] {
+        guard !cards.isEmpty else { return cards }
         return cards.shuffled()
     }
 }
