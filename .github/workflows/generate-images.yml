@@ -1,0 +1,238 @@
+name: Generate Card Images
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  generate-images:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v1
+      with:
+        swift-version: "5.9"
+        
+    - name: Create Image Generation Script
+      run: |
+        mkdir -p generated-images
+        cat > generate_images.swift << 'EOF'
+        import Foundation
+        import SwiftTarotCards
+        #if canImport(SwiftUI) && canImport(UIKit)
+        import SwiftUI
+        import UIKit
+
+        @available(iOS 15.0, *)
+        struct ImageGenerator {
+            static func generateCardImages() throws {
+                print("Starting card image generation...")
+                
+                // Create a deck
+                let deck = try TarotDeck()
+                
+                // Generate images for major arcana
+                let majorCards = deck.getMajorArcanaCards()
+                for (index, card) in majorCards.enumerated() {
+                    generateImage(for: card, filename: "major_\(String(format: "%02d", index))_\(card.name.lowercased().replacingOccurrences(of: " ", with: "_"))")
+                }
+                
+                // Generate images for a few minor arcana cards as examples
+                let minorCards = deck.getMinorArcanaCards()
+                for (index, card) in minorCards.prefix(10).enumerated() {
+                    generateImage(for: card, filename: "minor_\(String(format: "%02d", index))_\(card.name.lowercased().replacingOccurrences(of: " ", with: "_"))")
+                }
+                
+                print("Card image generation completed!")
+            }
+            
+            static func generateImage(for card: any TarotCard, filename: String) {
+                // Create a text representation since we can't render SwiftUI in CI
+                let textContent = """
+                ╔═══════════════════════════════════════╗
+                ║                                       ║
+                ║  \(card.name.padding(toLength: 35, withPad: " ", startingAt: 0))  ║
+                ║                                       ║
+                ║  Keywords:                            ║
+                ║  \(card.keywords.prefix(3).joined(separator: ", ").padding(toLength: 35, withPad: " ", startingAt: 0))  ║
+                ║                                       ║
+                ║  Arcana: \(card.arcana.rawValue.padding(toLength: 26, withPad: " ", startingAt: 0))  ║
+                ║                                       ║
+                ║  Upright meanings:                    ║
+                ║  \(card.meanings.upright.first?.prefix(35) ?? "".padding(toLength: 35, withPad: " ", startingAt: 0))  ║
+                ║                                       ║
+                ║  Reversed meanings:                   ║
+                ║  \(card.meanings.reversed.first?.prefix(35) ?? "".padding(toLength: 35, withPad: " ", startingAt: 0))  ║
+                ║                                       ║
+                ╚═══════════════════════════════════════╝
+                """
+                
+                let path = "generated-images/\(filename).txt"
+                try? textContent.write(toFile: path, atomically: true, encoding: .utf8)
+                print("Generated: \(path)")
+            }
+        }
+
+        do {
+            try ImageGenerator.generateCardImages()
+        } catch {
+            print("Error generating images: \(error)")
+            exit(1)
+        }
+        #else
+        print("SwiftUI/UIKit not available in this environment - generating text representations only")
+        
+        import SwiftTarotCards
+        
+        func generateTextCards() throws {
+            let deck = try TarotDeck()
+            
+            // Generate text representations for major arcana
+            let majorCards = deck.getMajorArcanaCards()
+            for (index, card) in majorCards.enumerated() {
+                let textContent = """
+                Card: \(card.name)
+                Type: Major Arcana
+                Number: \(card.number.rawValue)
+                Keywords: \(card.keywords.joined(separator: ", "))
+                
+                Upright Meanings:
+                \(card.meanings.upright.joined(separator: "\n"))
+                
+                Reversed Meanings:
+                \(card.meanings.reversed.joined(separator: "\n"))
+                
+                ---
+                """
+                
+                let filename = "major_\(String(format: "%02d", index))_\(card.name.lowercased().replacingOccurrences(of: " ", with: "_")).txt"
+                let path = "generated-images/\(filename)"
+                try textContent.write(toFile: path, atomically: true, encoding: .utf8)
+                print("Generated: \(path)")
+            }
+            
+            // Generate for some minor arcana as examples
+            let minorCards = deck.getMinorArcanaCards()
+            for (index, card) in minorCards.prefix(10).enumerated() {
+                let textContent = """
+                Card: \(card.name)
+                Type: Minor Arcana
+                Suit: \(card.suit.rawValue)
+                Element: \(card.element.rawValue)
+                Keywords: \(card.keywords.joined(separator: ", "))
+                
+                Upright Meanings:
+                \(card.meanings.upright.joined(separator: "\n"))
+                
+                Reversed Meanings:
+                \(card.meanings.reversed.joined(separator: "\n"))
+                
+                ---
+                """
+                
+                let filename = "minor_\(String(format: "%02d", index))_\(card.name.lowercased().replacingOccurrences(of: " ", with: "_")).txt"
+                let path = "generated-images/\(filename)"
+                try textContent.write(toFile: path, atomically: true, encoding: .utf8)
+                print("Generated: \(path)")
+            }
+        }
+        
+        do {
+            try generateTextCards()
+        } catch {
+            print("Error: \(error)")
+            exit(1)
+        }
+        #endif
+        EOF
+        
+    - name: Generate Images
+      run: |
+        swift run --package-path . -c release generate_images.swift || \
+        swift generate_images.swift
+      continue-on-error: true
+      
+    - name: Generate Sample Reading
+      run: |
+        cat > generate_reading.swift << 'EOF'
+        import Foundation
+        import SwiftTarotCards
+        
+        func generateSampleReading() throws {
+            let deck = try TarotDeck()
+            deck.shuffle()
+            
+            let generator = TarotReadingGenerator(deck: deck)
+            let reading = generator.generateReading(
+                spread: CommonSpreads.threeCard,
+                userContext: "Sample reading for demonstration"
+            )
+            
+            let interpretation = reading.basicInterpretation()
+            
+            let content = """
+            # Sample Tarot Reading
+            
+            Generated on: \(Date())
+            
+            \(interpretation)
+            
+            ## Library Information
+            
+            This reading was generated using the SwiftTarotCards library, demonstrating:
+            - Loading tarot card data from YAML files
+            - Secure shuffling using cryptographically random algorithms
+            - Spread system with position meanings
+            - Text-based card representation for CI environments
+            
+            The library supports:
+            - All 78 cards of the Rider-Waite-Smith tarot deck
+            - SwiftUI views for visual card rendering (when available)
+            - Extensible architecture for custom spreads and selection strategies
+            - Comprehensive test coverage
+            """
+            
+            try content.write(toFile: "generated-images/sample_reading.md", atomically: true, encoding: .utf8)
+            print("Generated sample reading")
+        }
+        
+        do {
+            try generateSampleReading()
+        } catch {
+            print("Error generating reading: \(error)")
+            exit(1)
+        }
+        EOF
+        
+        swift generate_reading.swift
+        
+    - name: List Generated Files
+      run: |
+        echo "Generated files:"
+        ls -la generated-images/ || echo "No files generated"
+        
+    - name: Display Sample Files
+      run: |
+        echo "=== Sample Major Arcana Card ==="
+        head -20 generated-images/major_00_* || echo "No major arcana files found"
+        echo ""
+        echo "=== Sample Minor Arcana Card ==="
+        head -20 generated-images/minor_00_* || echo "No minor arcana files found"
+        echo ""
+        echo "=== Sample Reading ==="
+        cat generated-images/sample_reading.md || echo "No reading file found"
+        
+    - name: Upload Generated Images
+      uses: actions/upload-artifact@v3
+      with:
+        name: tarot-card-representations
+        path: generated-images/
+        retention-days: 30
+      if: always()
