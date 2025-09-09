@@ -18,7 +18,7 @@ jobs:
     - name: Setup Swift
       uses: swift-actions/setup-swift@v1
       with:
-        swift-version: "5.9"
+        swift-version: "6.0"
         
     - name: Run Tests
       run: swift test --enable-code-coverage
@@ -33,7 +33,7 @@ jobs:
       
   test-linux:
     runs-on: ubuntu-latest
-    container: swift:5.9-jammy
+    container: swift:6.0-jammy
     
     steps:
     - uses: actions/checkout@v4
@@ -54,15 +54,11 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '16.4.0'
+        xcode-version: '15.4'
         
-    - name: Generate Xcode Project
-      run: swift package generate-xcodeproj
-      
-    - name: Test iOS Simulator
+    - name: Test iOS using Swift Package Manager
       run: |
         xcodebuild test \
-          -project SwiftTarotCards.xcodeproj \
           -scheme SwiftTarotCards-Package \
           -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
           -enableCodeCoverage YES

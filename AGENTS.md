@@ -51,7 +51,7 @@ Customizations and clarifications for this repository. Specify how general laws 
 3. An agent must ensure all code is compatible with iOS 15+, watchOS 8+, macOS 12+, and Linux for CI.
 4. An agent must maintain the tarot-model submodule and ensure data loading remains functional.
 5. An agent must provide both SwiftUI and text-based representations for all visual components.
-6. **An agent must validate all changes before claiming completion by running linting, building, and testing locally or in CI-compatible environments.**
+6. **An agent must validate all changes before claiming completion by running linting, building, and testing locally or in CI-compatible environments to avoid wasting premium AI resources.**
 7. **An agent must verify CI workflow compatibility by checking tool versions, dependencies, and platform requirements before submitting PRs.**
 
 ### Repo-Specific Law Clarifications
@@ -67,14 +67,21 @@ Customizations and clarifications for this repository. Specify how general laws 
 
 Before marking any PR as complete, agents MUST verify:
 
-1. **Linting**: Run `swiftlint lint --strict Sources/ Tests/` locally or via Docker and ensure 0 violations
+1. **Linting**: Run `swiftlint lint --strict Sources/ Tests/` locally via Docker (`docker run --rm -v "$(pwd)":/workspace -w /workspace norionomera/swiftlint:latest swiftlint lint --strict Sources/ Tests/`) and ensure 0 violations
 2. **Building**: Run `swift build` and ensure it compiles without errors
 3. **Testing**: Run `swift test` and ensure all tests pass
-4. **CI Compatibility**: 
-   - Verify Xcode versions exist in GitHub runners (check available versions in setup-xcode action docs)
+4. **File Formatting**: Ensure all Swift files end with exactly one trailing newline
+5. **CI Compatibility**: 
+   - Verify Xcode versions exist in GitHub runners (use available versions like 15.4, avoid bleeding edge)
    - Ensure all GitHub Actions use current versions (v3 actions are deprecated as of 2024)
+   - Use compatible Swift versions in CI (Swift 6.0+ recommended)
+   - Never use deprecated commands like `swift package generate-xcodeproj`
    - Validate that all tool dependencies are available and compatible
-5. **Platform Support**: Test on Linux (via Docker if needed) to ensure cross-platform compatibility
+6. **Platform Support**: Test on Linux (via Docker if needed) to ensure cross-platform compatibility
+7. **Workflow Validation**: 
+   - Check that workflows use correct Swift versions across all jobs
+   - Ensure Linux containers use matching Swift versions (e.g., `swift:6.0-jammy`)
+   - Verify iOS simulator tests don't rely on deprecated Xcode project generation
 
 ---
 

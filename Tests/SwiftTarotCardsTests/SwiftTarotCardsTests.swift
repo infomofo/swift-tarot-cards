@@ -161,3 +161,4 @@ private struct MockTarotCard: TarotCard, Hashable {
         hasher.combine(id)
     }
 }
+
