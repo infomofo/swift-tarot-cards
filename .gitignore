@@ -1,0 +1,34 @@
+# Build output
+.build/
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+
+# SwiftPM generated files
+Package.resolved
+.swiftpm/
+
+# Generated images (should not be committed)
+generated-images/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+!docs/images/
+
+# macOS
+.DS_Store
+
+# Temporary files
+.tmp/
+tmp/
+swiftlint.zip
+swiftlint
+
+# IDE
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/

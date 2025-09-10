@@ -40,7 +40,7 @@ Customizations and clarifications for this repository. Specify how general laws 
 
 ## Repo-Specific Clarifications of General Laws
 
-- **On Actionable Comments When Reviewing PRs**: For this repo, agents should always provide code suggestions for Swift, and prefer testable examples for poker hand logic and UI components. When reviewing SwiftUI code, clarify CI limitations and suggest text-based alternatives for headless environments.
+- **On Actionable Comments When Reviewing PRs**: For this repo, agents should always provide code suggestions for Swift, and prefer testable examples for tarot card logic and UI components. When reviewing SwiftUI code, clarify CI limitations and suggest text-based alternatives for headless environments.
 - **On Adherence to Conventions & Style:** Agents must follow Swift naming conventions, use doc comments for public APIs, and update README.md for any new features or changes.
 - **On Collaboration When Blocked:** If platform-specific features (e.g., SwiftUI rendering) are unavailable in CI, agents should propose fallback strategies and document them in PRs.
 
@@ -49,11 +49,39 @@ Customizations and clarifications for this repository. Specify how general laws 
 1. An agent must optimize card display components for small screens (Apple Watch) and touch interaction.
 2. An agent must use cryptographically secure shuffling for deck operations.
 3. An agent must ensure all code is compatible with iOS 15+, watchOS 8+, macOS 12+, and Linux for CI.
+4. An agent must maintain the tarot-model submodule and ensure data loading remains functional.
+5. An agent must provide both SwiftUI and text-based representations for all visual components.
+6. **An agent must validate all changes before claiming completion by running linting, building, and testing locally or in CI-compatible environments to avoid wasting premium AI resources.**
+7. **An agent must verify CI workflow compatibility by checking tool versions, dependencies, and platform requirements before submitting PRs.**
 
 ### Repo-Specific Law Clarifications
 
 - For SwiftUI component tests, agents should not require pixel-perfect image comparisons in CI, and should use text-based representations for validation.
-- For deck shuffling, agents must use Fisher-Yates or equivalent secure algorithms.
+- For deck shuffling, agents must use Fisher-Yates or equivalent secure algorithms using `SystemRandomNumberGenerator`.
+- For tarot card data, agents must preserve the integrity of traditional meanings while allowing extensibility.
+- For cross-platform compatibility, agents should use `#if canImport(SwiftUI)` guards and provide fallbacks for headless environments.
+- **For linting compliance, agents must run SwiftLint locally or via Docker before claiming code is ready. Use reasonable line length limits (150-160 characters) and disable problematic rules like `switch_case_on_newline` if they cause excessive violations.**
+- **For CI compatibility, agents must verify that all workflow dependencies (Xcode versions, action versions, tool versions) are current and available in GitHub runners. Use specific available Xcode versions (check GitHub runner documentation) and update deprecated GitHub Actions to latest versions (e.g., `actions/upload-artifact@v4`).**
+
+## Critical Pre-Submission Checklist
+
+Before marking any PR as complete, agents MUST verify:
+
+1. **Linting**: Run `swiftlint lint --strict Sources/ Tests/` locally via Docker (`docker run --rm -v "$(pwd)":/workspace -w /workspace norionomera/swiftlint:latest swiftlint lint --strict Sources/ Tests/`) and ensure 0 violations
+2. **Building**: Run `swift build` and ensure it compiles without errors
+3. **Testing**: Run `swift test` and ensure all tests pass
+4. **File Formatting**: Ensure all Swift files end with exactly one trailing newline
+5. **CI Compatibility**: 
+   - Verify Xcode versions exist in GitHub runners (use available versions like 15.4, avoid bleeding edge)
+   - Ensure all GitHub Actions use current versions (v3 actions are deprecated as of 2024)
+   - Use compatible Swift versions in CI (Swift 6.0+ recommended)
+   - Never use deprecated commands like `swift package generate-xcodeproj`
+   - Validate that all tool dependencies are available and compatible
+6. **Platform Support**: Test on Linux (via Docker if needed) to ensure cross-platform compatibility
+7. **Workflow Validation**: 
+   - Check that workflows use correct Swift versions across all jobs
+   - Ensure Linux containers use matching Swift versions (e.g., `swift:6.0-jammy`)
+   - Verify iOS simulator tests don't rely on deprecated Xcode project generation
 
 ---
 

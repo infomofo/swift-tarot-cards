@@ -1,0 +1,39 @@
+name: Swift Linting
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v2
+      with:
+        swift-version: "5.9”
+        
+    - name: Install SwiftLint
+      run: |
+        brew install swiftlint
+        
+    - name: Run SwiftLint
+      run: |
+        swiftlint --version
+        swiftlint lint --strict Sources/ Tests/
+        
+    - name: Check Swift format
+      run: |
+        swift-format --version || echo "swift-format not available, using basic checks"
+        # Basic Swift style checks
+        find Sources/ Tests/ -name "*.swift" -exec grep -l "[ \t]$" {} \; | while read file; do
+          echo "Trailing whitespace found in $file"
+          exit 1
+        done || echo "No trailing whitespace found"
