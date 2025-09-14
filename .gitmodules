@@ -1,0 +1,3 @@
+[submodule "tarot-model"]
+	path = tarot-model
+	url = https://github.com/infomofo/tarot-model.git
