@@ -67,7 +67,7 @@ Customizations and clarifications for this repository. Specify how general laws 
 
 Before marking any PR as complete, agents MUST verify:
 
-1. **Linting**: Run `swiftlint lint --strict Sources/ Tests/` locally via Docker (`docker run --rm -v "$(pwd)":/workspace -w /workspace norionomera/swiftlint:latest swiftlint lint --strict Sources/ Tests/`) and ensure 0 violations
+1. **Linting**: Run `swiftlint lint --strict Sources/ Tests/` locally via Docker (`docker run --rm -v "$(pwd)":/workspace -w /workspace norionomura/swiftlint:latest swiftlint lint --strict Sources/ Tests/`) and ensure 0 violations
 2. **Building**: Run `swift build` and ensure it compiles without errors
 3. **Testing**: Run `swift test` and ensure all tests pass
 4. **File Formatting**: Ensure all Swift files end with exactly one trailing newline
